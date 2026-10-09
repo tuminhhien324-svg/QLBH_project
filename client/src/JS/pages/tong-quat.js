@@ -2,13 +2,17 @@ import axios from "axios";
 import Chart from "chart.js/auto";
 import { BASE_URL } from "/src/JS/common/header";
 
-function generateRandomColors(count) {
-  const colors = [];
-  for (let i = 0; i < count; i++) {
-    const hue = (i * (360 / count)) % 360;
-    colors.push(`hsl(${hue}, 70%, 60%)`);
-  }
-  return colors;
+function getEnterpriseColors() {
+  return [
+    "#3b82f6", // Blue
+    "#8b5cf6", // Purple
+    "#10b981", // Green
+    "#f59e0b", // Orange
+    "#6366f1", // Indigo
+    "#14b8a6", // Teal
+    "#ec4899", // Pink
+    "#f43f5e"  // Rose
+  ];
 }
 
 // 1. Biểu đồ hình tròn: Phân bổ sản phẩm theo danh mục
@@ -21,7 +25,8 @@ async function renderCategoryChart() {
     const labels = stats.map((item) => item.label || item.tendanhmuc);
     const dataValues = stats.map((item) => parseInt(item.value) || 0);
 
-    const dynamicColors = generateRandomColors(stats.length);
+    const enterpriseColors = getEnterpriseColors();
+    const dynamicColors = stats.map((_, i) => enterpriseColors[i % enterpriseColors.length]);
     const canvasElement = document.getElementById("categoryPieChart");
     if (!canvasElement) return;
 
@@ -32,53 +37,36 @@ async function renderCategoryChart() {
     }
 
     new Chart(ctx, {
-      type: "pie",
+      type: "bar",
       data: {
         labels: labels,
         datasets: [
           {
+            label: "Số lượng",
             data: dataValues,
             backgroundColor: dynamicColors,
-            hoverOffset: 15,
-            borderWidth: 2,
-            borderColor: "#ffffff",
+            borderRadius: 4,
           },
         ],
       },
       options: {
+        indexAxis: 'y', // Sử dụng Horizontal Bar
         responsive: true,
         maintainAspectRatio: false,
-        animation: {
-          animateRotate: true,
-          animateScale: true,
-          duration: 1500,
-          easing: "easeOutQuart",
-        },
         plugins: {
-          legend: {
-            position: "right",
-            labels: {
-              usePointStyle: true,
-              pointStyle: "circle",
-              padding: 20,
-              font: { size: 13, family: "'Segoe UI', Roboto, sans-serif" },
-            },
-          },
+          legend: { display: false },
           tooltip: {
             backgroundColor: "rgba(26, 28, 46, 0.9)",
             padding: 12,
             cornerRadius: 8,
             titleFont: { size: 14, weight: "bold" },
             bodyFont: { size: 13 },
-            callbacks: {
-              label: function (context) {
-                const label = context.label || "";
-                const value = context.parsed || 0;
-                return ` ${label}: ${value.toLocaleString("vi-VN")} sản phẩm`;
-              },
-            },
           },
         },
+        scales: {
+          x: { grid: { color: "#eef0f3", borderDash: [5, 5] } },
+          y: { grid: { display: false } }
+        }
       },
     });
   } catch (err) {
@@ -86,46 +74,70 @@ async function renderCategoryChart() {
   }
 }
 
-// 2. Danh sách Top 5 sản phẩm bán chạy
-async function renderTopSellingList() {
-  const listContainer = document.getElementById("topSellingList");
-  if (!listContainer) return;
+// 2. Biểu đồ Horizontal Bar: Top 5 sản phẩm bán chạy
+async function renderTopProductsChart() {
   try {
     const response = await axios.get(`${BASE_URL}/thongke/top-products`);
-    const products = response.data.data;
+    const products = response.data.data.slice(0, 5); // Lấy top 5
 
-    let html = "";
-    products.forEach((item, index) => {
-      // 🟢 ĐỒNG BỘ ĐỌC TRƯỜNG: Hỗ trợ cả totalRevenue/totalrevenue viết thường của Postgres
-      const revenue = parseFloat(item.totalRevenue || item.totalrevenue) || 0;
-      const qty = parseInt(item.totalQty || item.totalqty) || 0;
-
-      const formattedRevenue = new Intl.NumberFormat("vi-VN", {
-        style: "currency",
-        currency: "VND",
-      }).format(revenue);
-
-      html += `
-                <div class="top-item d-flex align-items-center p-3 rounded-4 mb-3" 
-                     style="background: #fdfdff; border: 1px solid #f0f0f5;">
-                    <div class="rank-badge me-3">#${index + 1}</div>
-                    <div class="flex-grow-1">
-                        <div class="product-name mb-0" style="font-weight: 600; color: #1a1c2e;">
-                            ${item.label}
-                        </div>
-                        <small class="text-muted">${qty} sản phẩm đã bán</small>
-                    </div>
-                    <div class="product-revenue text-end" style="font-weight: 700; color: #2563eb;">
-                        ${formattedRevenue}
-                    </div>
-                </div>
-            `;
+    const labels = products.map((item) => {
+        let label = item.label || item.tendanhmuc || "Sản phẩm";
+        if (label.length > 20) label = label.substring(0, 20) + '...';
+        return label;
     });
-    listContainer.innerHTML = html;
+    const dataValues = products.map((item) => parseFloat(item.totalRevenue || item.totalrevenue) || 0);
+
+    const canvasElement = document.getElementById("topProductsChart");
+    if (!canvasElement) return;
+
+    const ctx = canvasElement.getContext("2d");
+    const existingChart = Chart.getChart(canvasElement);
+    if (existingChart) existingChart.destroy();
+
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Doanh thu",
+            data: dataValues,
+            backgroundColor: "#3b82f6", // Đổi màu xanh sang theme đồng nhất
+            borderRadius: 4,
+            barThickness: 24,
+          },
+        ],
+      },
+      options: {
+        indexAxis: 'y', // Convert to horizontal bar
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: "rgba(26, 28, 46, 0.9)",
+            callbacks: {
+              label: function(context) {
+                return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(context.parsed.x);
+              }
+            }
+          }
+        },
+        scales: {
+          x: { 
+            grid: { color: "#eef0f3", borderDash: [5, 5] },
+            ticks: {
+              callback: function(value) {
+                return value >= 1000000 ? (value / 1000000) + "M" : value;
+              }
+            }
+          },
+          y: { grid: { display: false } }
+        }
+      },
+    });
   } catch (err) {
-    listContainer.innerHTML =
-      '<p class="text-danger">Không thể tải danh sách sản phẩm.</p>';
-    console.error(err);
+    console.error("Lỗi vẽ biểu đồ Top Products:", err);
   }
 }
 
@@ -197,6 +209,10 @@ async function renderMonthlyRevenueChart() {
         },
       },
     });
+
+    // Hide skeleton
+    const skeleton = document.getElementById("skeletonRev");
+    if (skeleton) skeleton.classList.add("d-none");
   } catch (err) {
     console.error("Lỗi vẽ biểu đồ đường doanh thu tháng:", err);
   }
@@ -255,6 +271,10 @@ async function renderMonthlyOrdersChart() {
         },
       },
     });
+
+    // Hide skeleton
+    const skeleton = document.getElementById("skeletonOrd");
+    if (skeleton) skeleton.classList.add("d-none");
   } catch (err) {
     console.error("Lỗi vẽ biểu đồ cột số đơn:", err);
   }
@@ -277,6 +297,12 @@ function updateBadgeTrend(badgeEl, trendTextEl, percentage) {
 
 // Hàm khởi tạo tổng hợp toàn bộ Dashboard Admin
 export async function initTongQuan() {
+  // Show skeletons before fetching
+  const skelRev = document.getElementById("skeletonRev");
+  const skelOrd = document.getElementById("skeletonOrd");
+  if (skelRev) skelRev.classList.remove("d-none");
+  if (skelOrd) skelOrd.classList.remove("d-none");
+
   try {
     const resStats = await axios.get(`${BASE_URL}/thongke/overview`);
     const stats = resStats.data.data;
@@ -302,6 +328,14 @@ export async function initTongQuan() {
     if (customersEl)
       customersEl.innerText = khachHangObj.ThangNay.toLocaleString("vi-VN");
 
+    const aovEl = document.getElementById("totalAOV");
+    if (aovEl) {
+      const rev = parseFloat(doanhThuObj.ThangNay) || 0;
+      const ord = parseInt(donHangObj.ThangNay) || 0;
+      const aov = ord > 0 ? rev / ord : 0;
+      aovEl.innerText = new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(aov);
+    }
+
     // 2. Gán giá trị tăng trưởng phần trăm kèm thay đổi màu sắc Badge
     updateBadgeTrend(
       document.getElementById("revenueBadge"),
@@ -321,10 +355,20 @@ export async function initTongQuan() {
 
     // Kích hoạt đồng thời 4 đồ thị và danh sách chi tiết
     renderCategoryChart();
-    renderTopSellingList();
+    renderTopProductsChart();
     renderMonthlyRevenueChart();
     renderMonthlyOrdersChart();
   } catch (err) {
     console.error("Lỗi cập nhật Dashboard tổng quan:", err);
   }
 }
+
+// Lắng nghe sự kiện click nút Cập nhật (Filter Bar) bằng Event Delegation
+document.addEventListener("click", function(e) {
+  const btn = e.target.closest("#btnUpdateDashboard");
+  if (btn) {
+    e.preventDefault();
+    // Re-fetch data and show loading state
+    initTongQuan();
+  }
+});

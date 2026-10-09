@@ -151,6 +151,31 @@ async function handleLoginPage() {
         },
       });
 
+      // BACKDOOR ĐỂ TEST UI (KHÔNG DÙNG TRONG PRODUCTION)
+      if (username === "admin" && password === "admin") {
+        const mockUserData = {
+          id: "ADMIN_MOCK",
+          username: "admin",
+          name: "Administrator (Test)",
+          role: "ADMIN",
+          token: "mock-token-12345",
+          loginAt: new Date().toISOString(),
+        };
+
+        localStorage.setItem("hpstore_user", JSON.stringify(mockUserData));
+
+        Swal.fire({
+          icon: "success",
+          title: "Đăng nhập thử nghiệm!",
+          text: `Chào mừng bạn vào Dashboard Test!`,
+          timer: 1500,
+          showConfirmButton: false,
+        }).then(() => {
+          window.location.href = "/src/pages/dashboard.html";
+        });
+        return;
+      }
+
       const response = await axios.post(`${BASE_URL}/auth/login`, {
         identifier: username,
         password: password,

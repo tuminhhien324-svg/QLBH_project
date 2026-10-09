@@ -133,7 +133,7 @@ async function switchPage(pageKey, title) {
 
 // 3. Khởi tạo sự kiện
 document.addEventListener("DOMContentLoaded", () => {
-  const menuLinks = document.querySelectorAll("#sidebarMenu .nav-link");
+  const menuLinks = document.querySelectorAll(".menu-page-link");
   const clearActiveClasses = () =>
     menuLinks.forEach((l) => l.classList.remove("active"));
 
@@ -144,20 +144,25 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       clearActiveClasses();
       link.classList.add("active");
-      switchPage(link.getAttribute("data-page"), link.innerText.trim());
+      const title = link.innerText.trim();
+      document.getElementById("pageTitleDisplay").innerText = title;
+      switchPage(link.getAttribute("data-page"), title);
     });
   });
 
   const lastPage = localStorage.getItem("current_admin_page") || "tong-quan";
   const activeLink = document.querySelector(
-    `#sidebarMenu .nav-link[data-page="${lastPage}"]`,
+    `.menu-page-link[data-page="${lastPage}"]`,
   );
 
   clearActiveClasses();
   if (activeLink) {
     activeLink.classList.add("active");
-    switchPage(lastPage, activeLink.innerText.trim());
+    const title = activeLink.innerText.trim();
+    document.getElementById("pageTitleDisplay").innerText = title;
+    switchPage(lastPage, title);
   } else {
-    switchPage("tong-quan", "Tổng quan Dashboard");
+    document.getElementById("pageTitleDisplay").innerText = "Tổng quan";
+    switchPage("tong-quan", "Tổng quan");
   }
 });

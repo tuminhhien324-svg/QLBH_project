@@ -24,6 +24,12 @@ export async function checkAuth(allowedRoles) {
       return redirectToLogin("Phiên đăng nhập không hợp lệ!");
     }
 
+    // BACKDOOR ĐỂ TEST UI
+    if (user.token === "mock-token-12345") {
+      document.body.style.display = "block";
+      return;
+    }
+
     // ─── ĐỒNG BỘ URL: Chuyển sang domain Render thực tế giống các module khác ───
     const response = await axios.get(
       "https://qlbh-project.onrender.com/api/auth/verify-role",

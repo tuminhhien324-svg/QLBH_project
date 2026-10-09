@@ -1,129 +1,236 @@
-<div class="container-fluid p-4">
-  <div class="header-page mb-4">
-    <h2 class="fw-bold mb-1">Tổng quan Dashboard</h2>
-    <p class="text-muted small">
-      ●
-      <span class="text-success fw-medium"
-        >Theo dõi hiệu suất kinh doanh của HP STORE</span
-      >
-    </p>
+<div class="container-fluid px-3 px-md-4 py-4" style="width: 100%; max-width: none; margin: 0 auto;">
+  <!-- ROW 0: KPIs (6 Cards) -->
+  <div class="row g-3 mb-4">
+    <!-- 1. Doanh thu -->
+    <div class="col-md-4 col-lg-2">
+      <div class="card border-0 shadow-sm rounded-4 h-100 p-3 p-xl-4 bg-white d-flex flex-column justify-content-between">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <p class="text-muted mb-0 fw-medium" style="font-size: 14px;">Doanh thu</p>
+          <i class="fa-solid fa-dollar-sign text-success bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 14px;"></i>
+        </div>
+        <div class="fs-3 fw-bold mb-3 text-dark lh-1" id="totalRevenue" style="letter-spacing: -0.5px;">0đ</div>
+        <div class="d-flex align-items-center flex-wrap gap-1">
+          <span class="badge rounded-pill bg-light text-secondary" id="revenueBadge" style="font-size: 12px; font-weight: 600;"><span id="revenueTrend">--</span></span>
+          <span class="text-muted" style="font-size: 12px;">so với kỳ trước</span>
+        </div>
+      </div>
+    </div>
+    <!-- 2. Đơn hàng -->
+    <div class="col-md-4 col-lg-2">
+      <div class="card border-0 shadow-sm rounded-4 h-100 p-3 p-xl-4 bg-white d-flex flex-column justify-content-between">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <p class="text-muted mb-0 fw-medium" style="font-size: 14px;">Đơn hàng</p>
+          <i class="fa-solid fa-cart-shopping text-primary bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 14px;"></i>
+        </div>
+        <div class="fs-3 fw-bold mb-3 text-dark lh-1" id="totalOrders" style="letter-spacing: -0.5px;">0</div>
+        <div class="d-flex align-items-center flex-wrap gap-1">
+          <span class="badge rounded-pill bg-light text-secondary" id="ordersBadge" style="font-size: 12px; font-weight: 600;"><span id="ordersTrend">--</span></span>
+          <span class="text-muted" style="font-size: 12px;">so với kỳ trước</span>
+        </div>
+      </div>
+    </div>
+    <!-- 3. Khách hàng -->
+    <div class="col-md-4 col-lg-2">
+      <div class="card border-0 shadow-sm rounded-4 h-100 p-3 p-xl-4 bg-white d-flex flex-column justify-content-between">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <p class="text-muted mb-0 fw-medium" style="font-size: 14px;">Khách mới</p>
+          <i class="fa-solid fa-users text-info bg-info bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 14px;"></i>
+        </div>
+        <div class="fs-3 fw-bold mb-3 text-dark lh-1" id="totalCustomers" style="letter-spacing: -0.5px;">0</div>
+        <div class="d-flex align-items-center flex-wrap gap-1">
+          <span class="badge rounded-pill bg-light text-secondary" id="customersBadge" style="font-size: 12px; font-weight: 600;"><span id="customersTrend">--</span></span>
+          <span class="text-muted" style="font-size: 12px;">so với kỳ trước</span>
+        </div>
+      </div>
+    </div>
+    <!-- 4. Lợi nhuận (TODO API) -->
+    <div class="col-md-4 col-lg-2">
+      <div class="card border-0 shadow-sm rounded-4 h-100 p-3 p-xl-4 bg-white opacity-75 d-flex flex-column justify-content-between">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="d-flex flex-column">
+            <p class="text-muted mb-0 fw-medium" style="font-size: 14px;">Lợi nhuận</p>
+          </div>
+          <i class="fa-solid fa-chart-line text-warning bg-warning bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 14px;"></i>
+        </div>
+        <div class="fs-3 fw-bold mb-3 text-muted lh-1" id="totalProfit" style="letter-spacing: -0.5px;">--</div>
+        <div class="d-flex align-items-center flex-wrap gap-1">
+          <span class="badge rounded-pill bg-light text-secondary" style="font-size: 12px; font-weight: 600;">TODO API</span>
+        </div>
+      </div>
+    </div>
+    <!-- 5. Giá trị trung bình đơn -->
+    <div class="col-md-4 col-lg-2">
+      <div class="card border-0 shadow-sm rounded-4 h-100 p-3 p-xl-4 bg-white d-flex flex-column justify-content-between">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <p class="text-muted mb-0 fw-medium" style="font-size: 14px;">AOV</p>
+          <i class="fa-solid fa-receipt text-danger bg-danger bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 14px;"></i>
+        </div>
+        <div class="fs-3 fw-bold mb-3 text-dark lh-1" id="totalAOV" style="letter-spacing: -0.5px;">0đ</div>
+        <div class="d-flex align-items-center flex-wrap gap-1">
+          <span class="text-muted" style="font-size: 12px;">Tính toán tự động</span>
+        </div>
+      </div>
+    </div>
+    <!-- 6. Tồn kho (TODO API) -->
+    <div class="col-md-4 col-lg-2">
+      <div class="card border-0 shadow-sm rounded-4 h-100 p-3 p-xl-4 bg-white opacity-75 d-flex flex-column justify-content-between">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="d-flex flex-column">
+            <p class="text-muted mb-0 fw-medium" style="font-size: 14px;">Tồn kho</p>
+          </div>
+          <i class="fa-solid fa-boxes-stacked text-secondary bg-secondary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 14px;"></i>
+        </div>
+        <div class="fs-3 fw-bold mb-3 text-muted lh-1" id="totalInventory" style="letter-spacing: -0.5px;">--</div>
+        <div class="d-flex align-items-center flex-wrap gap-1">
+          <span class="badge rounded-pill bg-light text-secondary" style="font-size: 12px; font-weight: 600;">TODO API</span>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="row g-4 mb-4">
-    <div class="col-md-4">
-      <div class="stat-card p-4 rounded-4 shadow-sm border-0 bg-white h-100">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <div class="stat-icon bg-success-light text-success">
-            <i class="fa-solid fa-dollar-sign"></i>
-          </div>
-          <span class="badge rounded-pill px-3 py-2" id="revenueBadge">
-            <span id="revenueTrend">0%</span>
-          </span>
+  <!-- ROW 1: Revenue (8) & Orders (4) -->
+  <div class="row g-3 mb-4">
+    <!-- Doanh thu Chart (8 cols) -->
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h6 class="fw-bold mb-0 text-dark fs-5">Doanh thu theo thời gian</h6>
         </div>
-        <div class="stat-content">
-          <p class="text-muted mb-1 small fw-medium">Doanh thu tháng này</p>
-          <h3 class="fw-bold mb-0" id="totalRevenue">0đ</h3>
-        </div>
-        <div class="stat-progress mt-3">
-          <div class="progress" style="height: 4px">
-            <div class="progress-bar bg-success" style="width: 70%"></div>
+        <div style="height: 360px; position: relative;">
+          <div class="skeleton-chart position-absolute w-100 h-100 d-flex align-items-end gap-2 pb-3" id="skeletonRev">
+            <div class="w-100 bg-secondary bg-opacity-10 rounded-top placeholder-glow placeholder" style="height: 40%"></div>
+            <div class="w-100 bg-secondary bg-opacity-10 rounded-top placeholder-glow placeholder" style="height: 60%"></div>
+            <div class="w-100 bg-secondary bg-opacity-10 rounded-top placeholder-glow placeholder" style="height: 30%"></div>
+            <div class="w-100 bg-secondary bg-opacity-10 rounded-top placeholder-glow placeholder" style="height: 80%"></div>
+            <div class="w-100 bg-secondary bg-opacity-10 rounded-top placeholder-glow placeholder" style="height: 50%"></div>
+            <div class="w-100 bg-secondary bg-opacity-10 rounded-top placeholder-glow placeholder" style="height: 70%"></div>
           </div>
+          <canvas id="monthlyRevenueChart" style="position: relative; z-index: 2;"></canvas>
         </div>
       </div>
     </div>
-
-    <div class="col-md-4">
-      <div class="stat-card p-4 rounded-4 shadow-sm border-0 bg-white h-100">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <div class="stat-icon bg-primary-light text-primary">
-            <i class="fa-solid fa-cart-shopping"></i>
+    <!-- Đơn hàng Chart (4 cols) -->
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h6 class="fw-bold mb-0 text-dark fs-5">Đơn hàng theo thời gian</h6>
+        </div>
+        <div style="height: 360px; position: relative;">
+          <div class="skeleton-chart position-absolute w-100 h-100 d-flex align-items-end gap-2 pb-3" id="skeletonOrd">
+            <div class="w-100 bg-secondary bg-opacity-10 rounded-top placeholder-glow placeholder" style="height: 50%"></div>
+            <div class="w-100 bg-secondary bg-opacity-10 rounded-top placeholder-glow placeholder" style="height: 20%"></div>
+            <div class="w-100 bg-secondary bg-opacity-10 rounded-top placeholder-glow placeholder" style="height: 70%"></div>
+            <div class="w-100 bg-secondary bg-opacity-10 rounded-top placeholder-glow placeholder" style="height: 90%"></div>
+            <div class="w-100 bg-secondary bg-opacity-10 rounded-top placeholder-glow placeholder" style="height: 30%"></div>
+            <div class="w-100 bg-secondary bg-opacity-10 rounded-top placeholder-glow placeholder" style="height: 60%"></div>
           </div>
-          <span class="badge rounded-pill px-3 py-2" id="ordersBadge">
-            <span id="ordersTrend">0%</span>
-          </span>
-        </div>
-        <div class="stat-content">
-          <p class="text-muted mb-1 small fw-medium">Tổng đơn hàng tháng này</p>
-          <h3 class="fw-bold mb-0" id="totalOrders">0</h3>
-        </div>
-        <div class="stat-progress mt-3">
-          <div class="progress" style="height: 4px">
-            <div class="progress-bar bg-primary" style="width: 55%"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-4">
-      <div class="stat-card p-4 rounded-4 shadow-sm border-0 bg-white h-100">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <div class="stat-icon bg-purple-light text-purple">
-            <i class="fa-solid fa-users"></i>
-          </div>
-          <span class="badge rounded-pill px-3 py-2" id="customersBadge">
-            <span id="customersTrend">0%</span>
-          </span>
-        </div>
-        <div class="stat-content">
-          <p class="text-muted mb-1 small fw-medium">
-            Khách hàng mới tháng này
-          </p>
-          <h3 class="fw-bold mb-0" id="totalCustomers">0</h3>
-        </div>
-        <div class="stat-progress mt-3">
-          <div class="progress" style="height: 4px">
-            <div class="progress-bar bg-purple" style="width: 40%"></div>
-          </div>
+          <canvas id="monthlyOrdersChart" style="position: relative; z-index: 2;"></canvas>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="row g-4 mb-4">
-    <div class="col-md-6">
-      <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
-        <h5 class="fw-bold mb-4">Phân bổ theo danh mục</h5>
-        <div style="height: 100%; max-width: 100%; margin: auto" class="w-100">
+  <!-- ROW 2: Category (5) & Top Products (7) -->
+  <div class="row g-3 mb-4">
+    <!-- Category Chart (5 cols) -->
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+        <h6 class="fw-bold mb-4 text-dark fs-5">Sản phẩm theo danh mục</h6>
+        <div style="height: 340px; position: relative;" class="w-100">
           <canvas id="categoryPieChart"></canvas>
         </div>
       </div>
     </div>
-
-    <div class="col-md-6">
-      <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
-        <h5 class="fw-bold mb-4">Sản phẩm bán chạy</h5>
-        <div id="topSellingList" class="d-flex flex-column gap-2">
-          <div class="text-center py-4">
-            <div class="spinner-border text-primary" role="status"></div>
-          </div>
+    <!-- Top Products (7 cols) -->
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h6 class="fw-bold mb-0 text-dark fs-5">Top Sản Phẩm</h6>
+          <select class="form-select form-select-sm shadow-none border-0 bg-light fw-medium" style="width: auto; border-radius: 8px;">
+            <option>Theo doanh thu</option>
+            <option>Theo số lượng</option>
+            <option>Theo lợi nhuận (TODO)</option>
+          </select>
+        </div>
+        <div style="height: 340px; position: relative;" class="w-100">
+           <canvas id="topProductsChart"></canvas>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="row g-4">
-    <div class="col-md-12">
-      <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+  <!-- ROW 3: Customer Analytics (6) & Inventory Analytics (6) -->
+  <div class="row g-3 mb-4">
+    <!-- Customer Analytics (TODO API) -->
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white border-top border-primary border-4 opacity-75">
         <div class="d-flex justify-content-between align-items-center mb-4">
-          <h5 class="fw-bold mb-0">Doanh thu theo tháng</h5>
-          <span class="badge bg-light text-primary rounded-pill px-3"
-            >2026</span
-          >
+          <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-users text-primary fs-5"></i>
+            <h6 class="fw-bold mb-0 text-dark">Customer Analytics</h6>
+          </div>
+          <span class="badge bg-warning text-dark">TODO API</span>
         </div>
-        <div style="height: 320px">
-          <canvas id="monthlyRevenueChart"></canvas>
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="p-3 bg-light rounded-3">
+              <div class="text-muted small mb-1">Khách quay lại</div>
+              <h5 class="fw-bold mb-0">--</h5>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 bg-light rounded-3">
+              <div class="text-muted small mb-1">Khách VIP</div>
+              <h5 class="fw-bold mb-0">--</h5>
+            </div>
+          </div>
+          <div class="col-12 mt-3">
+             <div class="d-flex flex-column align-items-center justify-content-center text-muted p-4 border rounded-3" style="border-style: dashed !important; border-color: #cbd5e1 !important; background: #f8fafc;">
+                <i class="fa-solid fa-users-slash fs-1 mb-3 text-secondary opacity-50"></i>
+                <div class="fw-medium mb-1 text-dark">Chưa có dữ liệu phân tích</div>
+                <div class="small text-center" style="max-width: 200px;">Hệ thống chưa thu thập đủ dữ liệu phân khúc khách hàng kỳ này.</div>
+             </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="col-md-12">
-      <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+    <!-- Inventory Analytics (TODO API) -->
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white border-top border-warning border-4 opacity-75">
         <div class="d-flex justify-content-between align-items-center mb-4">
-          <h5 class="fw-bold mb-0">Đơn hàng theo tháng</h5>
-          <span class="badge bg-light text-purple rounded-pill px-3">2026</span>
+          <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-boxes-stacked text-warning fs-5"></i>
+            <h6 class="fw-bold mb-0 text-dark">Inventory Analytics</h6>
+          </div>
+          <span class="badge bg-warning text-dark">TODO API</span>
         </div>
-        <div style="height: 320px">
-          <canvas id="monthlyOrdersChart"></canvas>
+        <div class="row g-3">
+          <div class="col-4">
+            <div class="p-3 bg-danger bg-opacity-10 text-danger rounded-3 text-center">
+              <h5 class="fw-bold mb-0">--</h5>
+              <div class="small">Sắp hết</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-3 text-center">
+              <h5 class="fw-bold mb-0">--</h5>
+              <div class="small">Bán chậm</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="p-3 bg-success bg-opacity-10 text-success rounded-3 text-center">
+              <h5 class="fw-bold mb-0">--</h5>
+              <div class="small">Tồn nhiều</div>
+            </div>
+          </div>
+          <div class="col-12 mt-3">
+             <div class="d-flex flex-column align-items-center justify-content-center text-muted p-4 border rounded-3" style="border-style: dashed !important; border-color: #cbd5e1 !important; background: #f8fafc;">
+                <i class="fa-solid fa-box-open fs-1 mb-3 text-secondary opacity-50"></i>
+                <div class="fw-medium mb-1 text-dark">Kho hàng đang trống</div>
+                <div class="small text-center" style="max-width: 200px;">Hãy bắt đầu nhập hàng để theo dõi biến động tồn kho tại đây.</div>
+             </div>
+          </div>
         </div>
       </div>
     </div>
