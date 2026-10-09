@@ -303,19 +303,26 @@ export async function initTongQuan() {
   if (skelRev) skelRev.classList.remove("d-none");
   if (skelOrd) skelOrd.classList.remove("d-none");
 
+  // Get filter values if available
+  const branchFilter = document.getElementById("branchFilter")?.value || "ALL";
+  const channelFilter = document.getElementById("channelFilter")?.value || "ALL";
+  const params = { branch: branchFilter, channel: channelFilter };
+
   try {
-    const resStats = await axios.get(`${BASE_URL}/thongke/overview`);
+    const resStats = await axios.get(`${BASE_URL}/thongke/overview`, { params });
     const stats = resStats.data.data;
 
     // Phân rã dữ liệu từ cấu trúc Object đa tầng mới của Backend
     const doanhThuObj = stats.DoanhThu || { ThangNay: 0, PhanTram: 0 };
     const donHangObj = stats.TongDonHang || { ThangNay: 0, PhanTram: 0 };
     const khachHangObj = stats.TongKhachHang || { ThangNay: 0, PhanTram: 0 };
+    const loiNhuanObj = stats.LoiNhuanGop || { ThangNay: 0, PhanTram: 0 };
 
     // 1. Gán giá trị số liệu chính (Tháng này) vào thẻ
     const revenueEl = document.getElementById("totalRevenue");
     const ordersEl = document.getElementById("totalOrders");
     const customersEl = document.getElementById("totalCustomers");
+    const profitEl = document.getElementById("totalProfit");
 
     if (revenueEl) {
       revenueEl.innerText = new Intl.NumberFormat("vi-VN", {
@@ -327,6 +334,12 @@ export async function initTongQuan() {
       ordersEl.innerText = donHangObj.ThangNay.toLocaleString("vi-VN");
     if (customersEl)
       customersEl.innerText = khachHangObj.ThangNay.toLocaleString("vi-VN");
+    if (profitEl) {
+      profitEl.innerText = new Intl.NumberFormat("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      }).format(parseFloat(loiNhuanObj.ThangNay) || 0);
+    }
 
     const aovEl = document.getElementById("totalAOV");
     if (aovEl) {
@@ -352,6 +365,11 @@ export async function initTongQuan() {
       document.getElementById("customersTrend"),
       khachHangObj.PhanTram,
     );
+    updateBadgeTrend(
+      document.getElementById("profitBadge"),
+      document.getElementById("profitTrend"),
+      loiNhuanObj.PhanTram,
+    );
 
     // Kích hoạt đồng thời 4 đồ thị và danh sách chi tiết
     renderCategoryChart();
@@ -364,11 +382,23 @@ export async function initTongQuan() {
 }
 
 // Lắng nghe sự kiện click nút Cập nhật (Filter Bar) bằng Event Delegation
-document.addEventListener("click", function(e) {
+document.addEventListener("click", async function(e) {
   const btn = e.target.closest("#btnUpdateDashboard");
   if (btn) {
     e.preventDefault();
-    // Re-fetch data and show loading state
-    initTongQuan();
+    
+    // Thêm trạng thái Loading State cho nút
+    const originalHtml = btn.innerHTML;
+    btn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang tải...`;
+    btn.disabled = true;
+
+    try {
+      // Re-fetch data and show loading state
+      await initTongQuan();
+    } finally {
+      // Trả lại trạng thái cũ
+      btn.innerHTML = originalHtml;
+      btn.disabled = false;
+    }
   }
 });

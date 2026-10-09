@@ -142,19 +142,14 @@
                 <span class="text-muted mx-1" style="font-size: 12px;"><i class="fa-solid fa-arrow-right"></i></span>
                 <input type="date" class="form-control form-control-sm bg-transparent border-0 shadow-none text-secondary fw-medium px-1" style="width: 125px; outline: none; font-size: 13px;">
               </div>
-              <select class="form-select form-select-sm bg-light border-0 shadow-none text-secondary fw-medium" style="width: auto; border-radius: 8px;">
-                <option>Tất cả danh mục</option>
-                <option>Laptop</option>
-                <option>Linh kiện</option>
+              <select id="branchFilter" class="form-select form-select-sm bg-light border-0 shadow-none text-secondary fw-medium" style="width: auto; border-radius: 8px;">
+                <option value="ALL">Tất cả chi nhánh</option>
+                <option value="MAIN_BRANCH">Chi nhánh Chính</option>
               </select>
-              <select class="form-select form-select-sm bg-light border-0 shadow-none text-secondary fw-medium" style="width: auto; border-radius: 8px;">
-                <option>Mọi trạng thái</option>
-                <option>Hoàn thành</option>
-                <option>Đang xử lý</option>
-              </select>
-              <select class="form-select form-select-sm bg-light border-0 shadow-none text-secondary fw-medium" style="width: auto; border-radius: 8px;">
-                <option>Tất cả nhân viên</option>
-                <option>Admin</option>
+              <select id="channelFilter" class="form-select form-select-sm bg-light border-0 shadow-none text-secondary fw-medium" style="width: auto; border-radius: 8px;">
+                <option value="ALL">Tất cả kênh bán</option>
+                <option value="ONLINE">Online</option>
+                <option value="POS">Tại quầy (POS)</option>
               </select>
               <button id="btnUpdateDashboard" class="btn btn-sm btn-primary d-flex align-items-center gap-2 border-0 fw-medium shadow-sm" style="border-radius: 8px; background: linear-gradient(90deg, #2563eb 0%, #a855f7 100%);">
                 <i class="fa-solid fa-arrows-rotate"></i> <span>Cập nhật</span>
