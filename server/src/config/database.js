@@ -12,6 +12,11 @@ const pool = new Pool({
   idleTimeoutMillis: 30000,
 });
 
+// 🟢 Áp dụng Schema mới cho toàn bộ query trong kết nối này
+pool.on('connect', (client) => {
+  client.query('SET search_path TO qlbh, public');
+});
+
 // Tạo promise để kiểm tra kết nối khi khởi động app
 const poolPromise = pool
   .connect()
