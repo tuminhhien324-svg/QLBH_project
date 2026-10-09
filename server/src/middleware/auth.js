@@ -27,6 +27,10 @@ const verifyToken = (req, res, next) => {
     // Tạo cơ chế fallback: Đảm bảo dù controller dùng req.user.maND hay req.user.mand cũng không bị gãy
     req.user.maND = decoded.maND || decoded.mand;
 
+    // 🟢 CẢI TIẾN MULTI-BRANCH: Gắn organization_id và branch_id
+    req.user.organization_id = decoded.organization_id || null;
+    req.user.branch_id = decoded.branch_id || null;
+
     next();
   } catch (error) {
     console.error("JWT Verify Error:", error.message);
@@ -75,9 +79,31 @@ const authorizeRoles = (...allowedRoles) => {
   };
 };
 
+// 5. Middleware kiểm tra truy cập theo Tổ chức (Multi-tenant)
+const requireOrganization = (req, res, next) => {
+  if (!req.user || !req.user.organization_id) {
+    return res.status(403).json({
+      message: "Truy cập bị từ chối. Không xác định được tổ chức (Organization)!",
+    });
+  }
+  next();
+};
+
+// 6. Middleware kiểm tra truy cập theo Chi nhánh (Multi-branch)
+const requireBranch = (req, res, next) => {
+  if (!req.user || !req.user.branch_id) {
+    return res.status(403).json({
+      message: "Truy cập bị từ chối. Không xác định được chi nhánh (Branch)!",
+    });
+  }
+  next();
+};
+
 module.exports = {
   verifyToken,
   isAdmin,
   isEmployee,
   authorizeRoles,
+  requireOrganization,
+  requireBranch,
 };
