@@ -36,17 +36,30 @@ const ThongKeModel = {
             DATE_TRUNC('month', CURRENT_DATE) - INTERVAL '1 second' AS cuoi_thang_truoc
         )
         SELECT 
-          -- 1. Thống kê Doanh Thu (Loại trừ đơn hàng 'Đã hủy')
-          COALESCE(SUM(dh.tongtien) FILTER (WHERE dh.ngaydat BETWEEN t.dau_thang_nay AND t.cuoi_thang_nay AND dh.trangthai != 'Đã hủy'), 0)::float AS doanhthu_nay,
-          COALESCE(SUM(dh.tongtien) FILTER (WHERE dh.ngaydat BETWEEN t.dau_thang_truoc AND t.cuoi_thang_truoc AND dh.trangthai != 'Đã hủy'), 0)::float AS doanhthu_truoc,
+          -- 1. Thống kê Doanh Thu (CHỈ TÍNH đơn hàng 'Thành công' theo Data Correctness)
+          COALESCE(SUM(dh.tongtien) FILTER (WHERE dh.ngaydat BETWEEN t.dau_thang_nay AND t.cuoi_thang_nay AND dh.trangthai = 'Thành công'), 0)::float AS doanhthu_nay,
+          COALESCE(SUM(dh.tongtien) FILTER (WHERE dh.ngaydat BETWEEN t.dau_thang_truoc AND t.cuoi_thang_truoc AND dh.trangthai = 'Thành công'), 0)::float AS doanhthu_truoc,
 
-          -- 2. Thống kê Số Đơn Hàng
-          COUNT(dh.madonhang) FILTER (WHERE dh.ngaydat BETWEEN t.dau_thang_nay AND t.cuoi_thang_nay)::int AS donhang_nay,
-          COUNT(dh.madonhang) FILTER (WHERE dh.ngaydat BETWEEN t.dau_thang_truoc AND t.cuoi_thang_truoc)::int AS donhang_truoc,
+          -- 2. Thống kê Số Đơn Hàng (Loại trừ Nháp và Hủy)
+          COUNT(dh.madonhang) FILTER (WHERE dh.ngaydat BETWEEN t.dau_thang_nay AND t.cuoi_thang_nay AND dh.trangthai != 'Đã hủy')::int AS donhang_nay,
+          COUNT(dh.madonhang) FILTER (WHERE dh.ngaydat BETWEEN t.dau_thang_truoc AND t.cuoi_thang_truoc AND dh.trangthai != 'Đã hủy')::int AS donhang_truoc,
 
           -- 3. Thống kê Khách Hàng (Subquery cô lập để tránh trùng lặp bản ghi chéo)
           (SELECT COUNT(makh)::int FROM khachhang WHERE ngaytao BETWEEN t.dau_thang_nay AND t.cuoi_thang_nay) AS khachhang_nay,
-          (SELECT COUNT(makh)::int FROM khachhang WHERE ngaytao BETWEEN t.dau_thang_truoc AND t.cuoi_thang_truoc) AS khachhang_truoc
+          (SELECT COUNT(makh)::int FROM khachhang WHERE ngaytao BETWEEN t.dau_thang_truoc AND t.cuoi_thang_truoc) AS khachhang_truoc,
+
+          -- 4. Thống kê Lợi Nhuận Gộp (Doanh thu thuần - Giá vốn của đơn 'Thành công')
+          (SELECT COALESCE(SUM(ct.soluong * (ct.giaban - s.gianhap)), 0)::float 
+           FROM donhang d2 
+           JOIN chitiet_donhang ct ON d2.madonhang = ct.madonhang 
+           JOIN sanpham s ON ct.masp = s.masp 
+           WHERE d2.ngaydat BETWEEN t.dau_thang_nay AND t.cuoi_thang_nay AND d2.trangthai = 'Thành công') AS loinhuangop_nay,
+           
+          (SELECT COALESCE(SUM(ct.soluong * (ct.giaban - s.gianhap)), 0)::float 
+           FROM donhang d2 
+           JOIN chitiet_donhang ct ON d2.madonhang = ct.madonhang 
+           JOIN sanpham s ON ct.masp = s.masp 
+           WHERE d2.ngaydat BETWEEN t.dau_thang_truoc AND t.cuoi_thang_truoc AND d2.trangthai = 'Thành công') AS loinhuangop_truoc
         FROM mốc_thời_gian t
         LEFT JOIN donhang dh ON true
         GROUP BY t.dau_thang_nay, t.cuoi_thang_nay, t.dau_thang_truoc, t.cuoi_thang_truoc;
@@ -86,6 +99,11 @@ const ThongKeModel = {
           ThangTruoc: row.khachhang_truoc,
           PhanTram: tinhPhanTram(row.khachhang_nay, row.khachhang_truoc),
         },
+        LoiNhuanGop: {
+          ThangNay: row.loinhuangop_nay,
+          ThangTruoc: row.loinhuangop_truoc,
+          PhanTram: tinhPhanTram(row.loinhuangop_nay, row.loinhuangop_truoc),
+        },
       };
     } catch (error) {
       throw error;
@@ -103,6 +121,8 @@ const ThongKeModel = {
                     SUM(ct.soluong * ct.giaban)::float AS totalrevenue
                 FROM chitiet_donhang ct
                 JOIN sanpham s ON ct.masp = s.masp
+                JOIN donhang dh ON ct.madonhang = dh.madonhang
+                WHERE dh.trangthai = 'Thành công'
                 GROUP BY s.masp, s.tensp
                 ORDER BY totalrevenue DESC
                 LIMIT 5
@@ -147,11 +167,11 @@ const ThongKeModel = {
 
       const query = `
                 SELECT 
-                    EXTRACT(MONTH FROM ngayxuat)::int AS month, 
+                    EXTRACT(MONTH FROM ngaydat)::int AS month, 
                     SUM(tongtien)::float AS totalrevenue
-                FROM hoadon
-                WHERE EXTRACT(YEAR FROM ngayxuat) = $1 AND EXTRACT(MONTH FROM ngayxuat) <= $2
-                GROUP BY EXTRACT(MONTH FROM ngayxuat)
+                FROM donhang
+                WHERE EXTRACT(YEAR FROM ngaydat) = $1 AND EXTRACT(MONTH FROM ngaydat) <= $2 AND trangthai = 'Thành công'
+                GROUP BY EXTRACT(MONTH FROM ngaydat)
                 ORDER BY month ASC
             `;
 
